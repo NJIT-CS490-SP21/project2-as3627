@@ -1,23 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
+import './Board.css';
+import {Board} from './Board.js'
+import {useState} from 'react';
 
 function App() {
+  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Amandeep
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Board board={board} />
     </div>
   );
 }
