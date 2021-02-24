@@ -3,7 +3,7 @@ import './Board.css'
 
 export function Box(props){
     
-    return<div className="box">
+    return<div className="box" onClick = {props.click}>
     {props.move} 
     </div>;
    
