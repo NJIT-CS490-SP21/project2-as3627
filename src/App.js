@@ -4,12 +4,16 @@ import './Board.css';
 import {Board} from './Board.js'
 import {useState,  useRef, useEffect} from 'react';
 import io from 'socket.io-client';
-
+import {Login} from './Login.js';
+import {calculateWinner} from './WinnerCheck';
 const socket = io(); // Connects to socket connection
 
 function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [turn, setTurn] = useState(0);
+  const [list, setList] = useState([]);       // Array for holding usernames of people who logged in
+  const [loggedIn, setLoggedIn] = useState(false);  // Used to set if the user is logged in or not
+  const [counter, setCounter] = useState(0);  // Used to count the number of players
   
   function addMove(index){
     
@@ -32,6 +36,7 @@ function App() {
 
   }
   
+  
   useEffect(() => {
     socket.on('move', (data) => {
     console.log('Move event received!');
@@ -41,33 +46,16 @@ function App() {
   }, []);
   
   
-  function calculateWinner(squares) {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
-      }
-      else if(!squares.includes("")){
-        return 'draw';
-      }
-    }
-    return null;
-  }
-  
-  
   return (
     <div>
+      {loggedIn
+        ? <Board board={board} click={(index) => addMove(index)}/>
+        : <Login />
+      }
+      {/*
       <Board board={board} click={(index) => addMove(index)}/>
+      <Login />
+      */}
     </div>
   );
 }
