@@ -10,7 +10,7 @@ const socket = io(); // Connects to socket connection
 function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [turn, setTurn] = useState(0);
-  const [users, setUsers] = useState([]);             // Array for holding usernames of people who logged in
+  const [players, setPlayers] = useState([]);       // Array for holding usernames of people who logged in
   const [loggedIn, setLoggedIn] = useState(false);  // Used to set if the user is logged in or not
   const [counter, setCounter] = useState(0);        // Used to count the number of players
   const inputRef = useRef(null);
@@ -37,15 +37,14 @@ function App() {
   }
   
   
-  
-  function onClickButton(){
+  function onLoginButton(){
     
   if (inputRef.current.value != "" ) {
         const username = inputRef.current.value;
         // If your own client sends a message, we add it to the list of messages to 
         // render it on the UI.
         
-        setUsers(prevUsers => [...prevUsers, username]);
+        socket.emit('login', { username });
         setLoggedIn(true);
       }
     
@@ -57,6 +56,12 @@ function App() {
 
     setBoard(prevBoard => Object.assign([...prevBoard], {[data.index]: data.play }));
     });
+    
+    socket.on('login', (data) => {
+      console.log(data.players);
+
+    })
+    
   }, []);
   
   
@@ -66,13 +71,13 @@ function App() {
       {loggedIn
         ? <div><Board board={board} click={(index) => addMove(index)}/> 
         <ul>
-        {users}
+        Next is {players[turn]}
         </ul>
         </div>
         : <div>      
             <h1>Enter your Username</h1>
             <input ref={inputRef} type="text"/>
-            <button onClick={onClickButton}>Login</button>
+            <button onClick={onLoginButton}>Login</button>
           </div>
       }
 
