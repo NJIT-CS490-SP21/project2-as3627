@@ -48,12 +48,20 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     
     if len(players) < 2:
-        players.append(data['username'])
+        players.append(data['name'])
     else:
-        spectators.append(data['username'])
+        spectators.append(data['name'])
+        
     print(players)
     print(spectators)
-    socketio.emit('login', data, broadcast=True, include_self=False)
+    data['players'] = players
+    data['spectators'] = spectators
+    data['ready'] = False
+    
+    if len(players) == 2:
+        data['ready'] = True
+        
+    socketio.emit('login', data, broadcast=True, include_self=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
