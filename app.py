@@ -63,6 +63,26 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         
     socketio.emit('login', data, broadcast=True, include_self=True)
 
+restart = []
+@socketio.on('restart')
+def on_restart(data): # data is whatever arg you pass in your emit call on client
+    
+    print(str(data))
+    
+    if data['username'] not in restart:
+        if data['username'] in players:
+            restart.append(data['username'])
+    
+    print(restart)
+    
+    if len(restart) == 2:
+        socketio.emit('confirm', data, broadcast=True, include_self=True)
+        restart.clear()
+    
+    elif data['username'] in players:
+        socketio.emit('restart', data, broadcast=True, include_self=True)
+   
+
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
 # Note that we don't call app.run anymore. We call socketio.run with app arg

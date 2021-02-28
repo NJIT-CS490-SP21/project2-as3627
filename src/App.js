@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import './Board.css';
-import {Board} from './Board.js'
+import {Board} from './Board.js';
 import {useState,  useRef, useEffect} from 'react';
 import io from 'socket.io-client';
 import {calculateWinner} from './WinnerCheck';
@@ -16,6 +15,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);  // Used to set if the user is logged in or not
   const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
   const [username, setUsername] = useState("");     // String used to set the username for the player. 
+  const [vote, setVote] = useState(0);
   
   const inputRef = useRef(null);
   
@@ -59,10 +59,16 @@ function App() {
     
   }
   
+
+  function onRestartButton(){
+    socket.emit('restart', { username });
+    
+  }
+  
+  
   let status;
   const winner = calculateWinner(board);
   if (winner){
-    
     if (winner === 'draw'){
       status = "The Game is a Draw!"
     }
@@ -80,7 +86,8 @@ function App() {
   else{
     status = "Next is: " + players[turn];
   }
-  
+
+
   useEffect(() => {
     socket.on('move', (data) => {
       console.log('Move event received!');
@@ -103,6 +110,24 @@ function App() {
 
     });
     
+    socket.on('restart', (data) => {
+      console.log("Received 1 Vote");
+      setVote(1);
+      
+    });
+
+    socket.on('confirm', (data) => {
+      console.log("Confirming Restart");
+      
+      setBoard(["", "", "", "", "", "", "", "", ""]);
+      setTurn(0);
+      setVote(0);
+      
+    });
+    
+    
+
+    
   }, []);
   
   
@@ -117,6 +142,7 @@ function App() {
             ? <div> 
                 <Board board={board} click={(index) => addMove(index)}/> 
                 <h4>{status}</h4>
+                <button onClick={onRestartButton}>Restart? {vote} / 2</button>
                 <h5>Current Players</h5>
                 <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
                 <h5>Current Spectators</h5>
