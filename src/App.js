@@ -5,6 +5,7 @@ import {Board} from './Board.js'
 import {useState,  useRef, useEffect} from 'react';
 import io from 'socket.io-client';
 import {calculateWinner} from './WinnerCheck';
+import {ListUsers} from './ListUsers';
 const socket = io(); // Connects to socket connection
 
 function App() {
@@ -77,9 +78,6 @@ function App() {
       console.log(players[0]);
       
       if (data.ready){
-        
-        //setPlayers(data.players);
-      
         setReady(true);
       }
 
@@ -91,19 +89,27 @@ function App() {
   return (
     <div>
       {loggedIn
+      
         ? <div>
+        
             {ready 
+            
             ? <div> 
                 <Board board={board} click={(index) => addMove(index)}/> 
-                <h5>
-                Next is {players[turn]}
-                </h5>
-                </div>
+                <h4>Next is {players[turn]}</h4>
+                <h5>Current Players</h5>
+                <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+                <h5>Current Spectators</h5>
+                <ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+              </div>
+                
             :<div> 
-              <h5>Waiting for Player 2</h5>
+              <h5>Waiting for Player 2 to Join</h5>
             </div>
             }
+            
           </div>
+          
         : <div>      
             <h1>Enter your Username</h1>
             <input ref={inputRef} type="text"/>
