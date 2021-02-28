@@ -18,6 +18,11 @@ function App() {
   const [vote, setVote] = useState(0);
   
   const inputRef = useRef(null);
+  const loginRef = useRef(null);
+  loginRef.current = loggedIn;
+  
+  const userRef = useRef(null);
+  userRef.current = username;
   
   function addMove(index){
 
@@ -54,7 +59,6 @@ function App() {
       const name = inputRef.current.value;
       setUsername(name);
       socket.emit('login', { name });
-      setLoggedIn(true);
     }
     
   }
@@ -62,13 +66,13 @@ function App() {
 
   function onRestartButton(){
     socket.emit('restart', { username });
-    
   }
   
   
   let status;
   const winner = calculateWinner(board);
   if (winner){
+    
     if (winner === 'draw'){
       status = "The Game is a Draw!"
     }
@@ -110,13 +114,29 @@ function App() {
 
     });
     
+    socket.on('deny', (data) => {
+      if (!loginRef.current){
+        if (userRef.current == data.name){
+          alert("Username in use, please enter a new one");
+        }
+      }
+    });
+    
+    socket.on('confirm', (data) => {
+      if (!loginRef.current){
+        if (userRef.current == data.name){
+          setLoggedIn(true);
+        }
+      }
+    });
+    
     socket.on('restart', (data) => {
       console.log("Received 1 Vote");
       setVote(1);
       
     });
 
-    socket.on('confirm', (data) => {
+    socket.on('confirm_restart', (data) => {
       console.log("Confirming Restart");
       
       setBoard(["", "", "", "", "", "", "", "", ""]);
@@ -125,8 +145,6 @@ function App() {
       
     });
     
-    
-
     
   }, []);
   
@@ -139,20 +157,20 @@ function App() {
         
             {ready 
             
-            ? <div> 
-                <Board board={board} click={(index) => addMove(index)}/> 
-                <h4>{status}</h4>
-                <button onClick={onRestartButton}>Restart? {vote} / 2</button>
-                <h5>Current Players</h5>
-                <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
-                <h5>Current Spectators</h5>
-                <ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+              ? <div> 
+                  <Board board={board} click={(index) => addMove(index)}/> 
+                  <h4>{status}</h4>
+                  <button onClick={onRestartButton}>Restart? {vote} / 2</button>
+                  <h5>Current Players</h5>
+                  <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+                  <h5>Current Spectators</h5>
+                  <ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+                </div>
+                  
+              :<div> 
+                <h5>Waiting for Player 2 to Join</h5>
               </div>
-                
-            :<div> 
-              <h5>Waiting for Player 2 to Join</h5>
-            </div>
-            }
+              }
             
           </div>
           

@@ -45,23 +45,28 @@ spectators = []
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
     
-    print(str(data))
-    
-    if len(players) < 2:
-        players.append(data['name'])
+    if data['name'] in players:
+        socketio.emit('deny', data, broadcast=True, include_self=True)
+    elif data['name'] in spectators:
+        socketio.emit('deny', data, broadcast=True, include_self=True)
     else:
-        spectators.append(data['name'])
-        
-    print(players)
-    print(spectators)
-    data['players'] = players
-    data['spectators'] = spectators
-    data['ready'] = False
+        socketio.emit('confirm', data, broadcast=True, include_self=True)
+        if len(players) < 2:
+            players.append(data['name'])
+        else:
+            spectators.append(data['name'])
+            
+        print(players)
+        print(spectators)
+        data['players'] = players
+        data['spectators'] = spectators
+        data['ready'] = False
     
-    if len(players) == 2:
-        data['ready'] = True
+        if len(players) == 2:
+            data['ready'] = True
         
-    socketio.emit('login', data, broadcast=True, include_self=True)
+        socketio.emit('login', data, broadcast=True, include_self=True)
+
 
 restart = []
 @socketio.on('restart')
@@ -76,7 +81,7 @@ def on_restart(data): # data is whatever arg you pass in your emit call on clien
     print(restart)
     
     if len(restart) == 2:
-        socketio.emit('confirm', data, broadcast=True, include_self=True)
+        socketio.emit('confirm_restart', data, broadcast=True, include_self=True)
         restart.clear()
     
     elif data['username'] in players:
