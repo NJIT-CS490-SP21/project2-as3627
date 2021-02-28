@@ -10,15 +10,14 @@ const socket = io(); // Connects to socket connection
 
 function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
-  const [turn, setTurn] = useState(0);
-  const [players, setPlayers] = useState([]);       // Array for holding usernames of people who 
-  const [spectators, setSpectators] = useState([]); // Array for holding usernames of people who logged in
+  const [turn, setTurn] = useState(0);              // Int used to index player arrays
+  const [players, setPlayers] = useState([]);       // Array for holding usernames of players 
+  const [spectators, setSpectators] = useState([]); // Array for holding usernames of spectators
   const [loggedIn, setLoggedIn] = useState(false);  // Used to set if the user is logged in or not
+  const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
+  const [username, setUsername] = useState("");     // String used to set the username for the player. 
+  
   const inputRef = useRef(null);
-  
-  const [ready, setReady] = useState(false);
-  
-  const [username, setUsername] = useState("");
   
   function addMove(index){
 
@@ -29,6 +28,7 @@ function App() {
     if (username === players[turn]){
       
       if (board[index] === ""){
+        
         if (turn === 0) {
           setBoard(prevBoard => Object.assign([...prevBoard], {[index]: "X"} ));
           setTurn(1);
@@ -40,9 +40,10 @@ function App() {
           setTurn(0);
           socket.emit('move', { index: index, play: "O", nextTurn: 0 });
         }
+        
       }
+      
     }
-
    
   }
   
@@ -52,21 +53,40 @@ function App() {
     if (inputRef.current.value != "" ) {
       const name = inputRef.current.value;
       setUsername(name);
-      // If your own client sends a message, we add it to the list of messages to 
-      // render it on the UI.
-      
       socket.emit('login', { name });
       setLoggedIn(true);
     }
     
   }
   
+  let status;
+  const winner = calculateWinner(board);
+  if (winner){
+    
+    if (winner === 'draw'){
+      status = "The Game is a Draw!"
+    }
+    
+    else if (winner === 'X'){
+      status = "The winner is " + players[0] + "!";
+    }
+    
+    else {
+      status = "The winner is " + players[1]+ "!";
+    }
+    
+  }
+  
+  else{
+    status = "Next is: " + players[turn];
+  }
+  
   useEffect(() => {
     socket.on('move', (data) => {
-    console.log('Move event received!');
+      console.log('Move event received!');
 
-    setBoard(prevBoard => Object.assign([...prevBoard], {[data.index]: data.play }));
-    setTurn(data.nextTurn);
+      setBoard(prevBoard => Object.assign([...prevBoard], {[data.index]: data.play }));
+      setTurn(data.nextTurn);
     
     });
     
@@ -96,7 +116,7 @@ function App() {
             
             ? <div> 
                 <Board board={board} click={(index) => addMove(index)}/> 
-                <h4>Next is {players[turn]}</h4>
+                <h4>{status}</h4>
                 <h5>Current Players</h5>
                 <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
                 <h5>Current Spectators</h5>
