@@ -18,6 +18,9 @@ function App() {
   const [vote, setVote] = useState(0);
   
   const inputRef = useRef(null);
+  
+  // For Login and Username chacking, using state variables didn't work inside of useEffect.
+  // Mervyn reccomended that I utilize `useRef` for this, and it works.
   const loginRef = useRef(null);
   loginRef.current = loggedIn;
   
@@ -74,7 +77,7 @@ function App() {
   if (winner){
     
     if (winner === 'draw'){
-      status = "The Game is a Draw!"
+      status = "The Game is a Draw!";
     }
     
     else if (winner === 'X'){
@@ -158,26 +161,28 @@ function App() {
             {ready 
             
               ? <div> 
-                  <Board board={board} click={(index) => addMove(index)}/> 
-                  <h4>{status}</h4>
-                  <button onClick={onRestartButton}>Restart? {vote} / 2</button>
-                  <h5>Current Players</h5>
-                  <ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
-                  <h5>Current Spectators</h5>
-                  <ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul>
+                  <h2 className = "info">{status}</h2>
+                  <Board board={board} click={(index) => addMove(index)}/> <br />
+                  <div className="info"><button onClick={onRestartButton}>Restart? {vote} / 2</button></div>
+                  <h5 className = "info">Current Players</h5>
+                  <div className = "info"><ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
+                  <h5 className = "info">Current Spectators</h5>
+                  <div className = "info"><ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
                 </div>
                   
-              :<div> 
-                <h5>Waiting for Player 2 to Join</h5>
+              :<div className = "holder"> 
+                <h2 className = "info">Waiting for Player 2 to Join</h2>
               </div>
-              }
+            }
             
           </div>
           
-        : <div>      
-            <h1>Enter your Username</h1>
-            <input ref={inputRef} type="text"/>
-            <button onClick={onLoginButton}>Login</button>
+        : <div>
+            <div className="holder">
+            <h1 className = "info">Enter your Username</h1>
+            <div className = "info"><input ref={inputRef} type="text"/>
+            <button onClick={onLoginButton}>Login</button></div>
+            </div>
           </div>
       }
 
