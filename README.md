@@ -1,11 +1,13 @@
 # Project 2: Milestone 1
 
 ## Requirements
-Install these in the environment.
+Install these in the environment if you don't have them already.
 1. `npm install`
-2. `pip install -r requirements.txt`
-3. `pip install flask-socketio`
-4. `pip install flask-cors`
+2. `pip install Flask`
+3. `pip install -r requirements.txt`
+4. `pip install flask-socketio`
+5. `pip install flask-cors`
+6. `npm install -g heroku` (Not needed if you only want to run locally)
 
 ## Setup
 #### Clone the Repositoy
