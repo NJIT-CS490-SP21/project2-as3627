@@ -27,6 +27,7 @@ function App() {
   const userRef = useRef(null);
   userRef.current = username;
   
+  // Handles adding a move to the board
   function addMove(index){
 
     if (calculateWinner(board)){
@@ -56,6 +57,7 @@ function App() {
   }
   
   
+  // Handles the login action
   function onLoginButton(){
     
     if (inputRef.current.value != "" ) {
@@ -66,12 +68,14 @@ function App() {
     
   }
   
-
+  
+  // Handles hitting the restart game button.
   function onRestartButton(){
     socket.emit('restart', { username });
   }
   
   
+  // Shows the current Status. Displays whose move is next, who the winner is, and if there is a draw.
   let status;
   const winner = calculateWinner(board);
   if (winner){
@@ -94,8 +98,11 @@ function App() {
     status = "Next is: " + players[turn];
   }
 
-
+  
+  // Handle everything the server emits. 
   useEffect(() => {
+    
+    // When a move has been made.
     socket.on('move', (data) => {
       console.log('Move event received!');
 
@@ -104,6 +111,7 @@ function App() {
     
     });
     
+    // When a user has logged in.
     socket.on('login', (data) => {
       console.log(data.players);
       
@@ -117,6 +125,7 @@ function App() {
 
     });
     
+    // When a person tries to login with a duplicate username.
     socket.on('deny', (data) => {
       if (!loginRef.current){
         if (userRef.current == data.name){
@@ -125,6 +134,7 @@ function App() {
       }
     });
     
+    // When a person logs in with a unique username.
     socket.on('confirm', (data) => {
       if (!loginRef.current){
         if (userRef.current == data.name){
@@ -133,12 +143,14 @@ function App() {
       }
     });
     
+    // When 1 player votes to restart.
     socket.on('restart', (data) => {
       console.log("Received 1 Vote");
       setVote(1);
       
     });
 
+    // When two players vote to restart. Actually restarting the game
     socket.on('confirm_restart', (data) => {
       console.log("Confirming Restart");
       
@@ -152,6 +164,7 @@ function App() {
   }, []);
   
   
+  // Using JSX to render the page
   return (
     <div>
       {loggedIn
