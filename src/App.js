@@ -60,7 +60,7 @@ function App() {
   // Handles the login action
   function onLoginButton(){
     
-    if (inputRef.current.value != "" ) {
+    if (inputRef.current.value !== "" ) {
       const name = inputRef.current.value;
       setUsername(name);
       socket.emit('login', { name });
@@ -128,7 +128,7 @@ function App() {
     // When a person tries to login with a duplicate username.
     socket.on('deny', (data) => {
       if (!loginRef.current){
-        if (userRef.current == data.name){
+        if (userRef.current === data.name){
           alert("Username in use, please enter a new one");
         }
       }
@@ -137,7 +137,7 @@ function App() {
     // When a person logs in with a unique username.
     socket.on('confirm', (data) => {
       if (!loginRef.current){
-        if (userRef.current == data.name){
+        if (userRef.current === data.name){
           setLoggedIn(true);
         }
       }
