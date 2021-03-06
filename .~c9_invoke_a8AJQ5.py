@@ -71,7 +71,7 @@ def on_disconnect():
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('move')
-def on_move(data): # data is whatever arg you pass in your emit call on client
+def on_chat(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
@@ -108,34 +108,21 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
 
         socketio.emit('login', data, broadcast=True, include_self=True)
 
-
 current_winner = ""
 @socketio.on('winner')
-def on_winner(data): # This function will get a winner and update the DB accordingly
+def on_winner(data): # data is whatever arg you pass in your emit call on client
     global current_winner
     
     print(str(data))
     if current_winner == "":
         current_winner = data["name"]
-        print("CURRENT WINNER IS: " + current_winner)
-
-
-current_loser = ""
-@socketio.on('loser')
-def on_loser(data): # This function will get a winner and update the DB accordingly
-    global current_loser
-    
-    print(str(data))
-    if current_loser == "":
-        current_loser = data["name"]
-        print("CURRENT LOSER IS: " + current_loser)
-
-
+        print("CURRENT WINNER IS:")
+        print(current_winner)
+        
 restart = []
 @socketio.on('restart')
 def on_restart(data): # data is whatever arg you pass in your emit call on client
     global current_winner
-    global current_loser
     print(str(data))
 
     if data['username'] not in restart:
@@ -147,8 +134,7 @@ def on_restart(data): # data is whatever arg you pass in your emit call on clien
     if len(restart) == 2:
         socketio.emit('confirm_restart', data, broadcast=True, include_self=True)
         current_winner = ""
-        current_loser = ""
-        print("AFTER RESTART, CURRENT WINNER IS: " + current_winner +" AND CURRENT LOSER IS: " + current_loser)
+        print("AFTER RESTART, CURRENT WINNER IS: " + current_winner)
         restart.clear()
 
     elif data['username'] in players:

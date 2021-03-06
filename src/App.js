@@ -16,6 +16,7 @@ function App() {
   const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
   const [username, setUsername] = useState("");     // String used to set the username for the player. 
   const [vote, setVote] = useState(0);
+  const [champ, setChamp] = useState("");
   
   const inputRef = useRef(null);
   
@@ -78,6 +79,7 @@ function App() {
   // Shows the current Status. Displays whose move is next, who the winner is, and if there is a draw.
   let status;
   const winner = calculateWinner(board);
+  let current_champ = "";
   if (winner){
     
     if (winner === 'draw'){
@@ -86,10 +88,16 @@ function App() {
     
     else if (winner === 'X'){
       status = "The winner is " + players[0] + "!";
+      //current_champ = players[0];
+      check_champ(players[0]);
+      check_loser(players[1]);
     }
     
-    else {
+    else{
       status = "The winner is " + players[1]+ "!";
+      //current_champ = players[1];
+      check_champ(players[1]);
+      check_loser(players[0]);
     }
     
   }
@@ -98,6 +106,23 @@ function App() {
     status = "Next is: " + players[turn];
   }
 
+
+  function check_champ(name){
+    
+    if (username === name){
+      console.log("WE WIN");
+      socket.emit('winner', { name });
+    }
+  }
+  
+  function check_loser(name){
+    
+    if (username === name){
+      console.log("WE LOSE");
+      socket.emit('loser', { name });
+    }
+  }
+  
   
   // Handle everything the server emits. 
   useEffect(() => {
