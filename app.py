@@ -35,6 +35,7 @@ def index(filename):
 
 
 def print_players():
+    '''Function used to print current list of players. Used for debugging'''
     all_players = models.Player.query.all()
     users = []
     for player in all_players:
@@ -42,6 +43,20 @@ def print_players():
     print("Current Players: ")
     print(users)
 
+def add_player(name):
+    '''Function to add username to DB'''
+    all_players = models.Player.query.all()
+    users = []
+    for player in all_players:
+        users.append(player.username)
+    if name not in users:
+        new_user = models.Player(username=name, points=100)
+        db.session.add(new_user)
+        db.session.commit
+        print("Added new user: ")
+        print(name)
+    else:
+        print("Duplicate user will not be added")
 
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
@@ -74,9 +89,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         socketio.emit('deny', data, broadcast=True, include_self=True)
     else:
         socketio.emit('confirm', data, broadcast=True, include_self=True)
-        new_user = models.Player(username=data['name'], points=100)
-        db.session.add(new_user)
-        db.session.commit()
+        add_player(data['name'])
         print_players()
 
         if len(players) < 2:
@@ -84,8 +97,8 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         else:
             spectators.append(data['name'])
 
-        print(players)
-        print(spectators)
+        #print(players)
+        #print(spectators)
         data['players'] = players
         data['spectators'] = spectators
         data['ready'] = False
