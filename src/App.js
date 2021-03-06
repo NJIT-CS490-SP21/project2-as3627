@@ -16,7 +16,6 @@ function App() {
   const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
   const [username, setUsername] = useState("");     // String used to set the username for the player. 
   const [vote, setVote] = useState(0);
-  const [champ, setChamp] = useState("");
   
   const inputRef = useRef(null);
   

@@ -52,11 +52,33 @@ def add_player(name):
     if name not in users:
         new_user = models.Player(username=name, points=100)
         db.session.add(new_user)
-        db.session.commit
+        db.session.commit()
         print("Added new user: ")
         print(name)
     else:
         print("Duplicate user will not be added")
+
+
+def update_points(name, status):
+    #user = models.Player.query.filter_by(username=name).first()
+    user = db.session.query(models.Player).filter_by(username=name).first()
+    if status == 'win':
+        #user.points += 1
+        #db.session.commit()
+        setattr(user, 'points', user.points+1)
+        db.session.commit()
+        user = models.Player.query.filter_by(username=name).first()
+        print("Winner's Points")
+        print(user.points)
+    
+    if status == 'loss':
+        #user.points -= 1
+        #db.session.commit()
+        setattr(user, 'points', user.points-1)
+        db.session.commit()
+        user = models.Player.query.filter_by(username=name).first()
+        print("Loser's Points")
+        print(user.points)
 
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
@@ -97,8 +119,6 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         else:
             spectators.append(data['name'])
 
-        #print(players)
-        #print(spectators)
         data['players'] = players
         data['spectators'] = spectators
         data['ready'] = False
@@ -117,6 +137,7 @@ def on_winner(data): # This function will get a winner and update the DB accordi
     print(str(data))
     if current_winner == "":
         current_winner = data["name"]
+        update_points(current_winner, 'win')
         print("CURRENT WINNER IS: " + current_winner)
 
 
@@ -128,6 +149,7 @@ def on_loser(data): # This function will get a winner and update the DB accordin
     print(str(data))
     if current_loser == "":
         current_loser = data["name"]
+        update_points(current_loser, 'loss')
         print("CURRENT LOSER IS: " + current_loser)
 
 
