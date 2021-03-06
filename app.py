@@ -34,6 +34,15 @@ def index(filename):
     return send_from_directory('./build', filename)
 
 
+def print_players():
+    all_players = models.Player.query.all()
+    users = []
+    for player in all_players:
+        users.append(player.username)
+    print("Current Players: ")
+    print(users)
+
+
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
@@ -65,6 +74,11 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         socketio.emit('deny', data, broadcast=True, include_self=True)
     else:
         socketio.emit('confirm', data, broadcast=True, include_self=True)
+        new_user = models.Player(username=data['name'], points=100)
+        db.session.add(new_user)
+        db.session.commit()
+        print_players()
+
         if len(players) < 2:
             players.append(data['name'])
         else:
