@@ -18,6 +18,7 @@ function App() {
   const [vote, setVote] = useState(0);
   const [rankNames, setRankNames] = useState([]);
   const [rankPoints, setRankPoints] = useState([]);
+  const [leaderboard, setLeaderboard] = useState(false);
   //const [viewRank, setViewRank] = useState(false);
 
   const inputRef = useRef(null);
@@ -78,6 +79,9 @@ function App() {
     socket.emit('restart', { username });
   }
   
+  function onShowRanks(){
+    setLeaderboard(!leaderboard);
+  }
   
   // Shows the current Status. Displays whose move is next, who the winner is, and if there is a draw.
   let status;
@@ -219,6 +223,23 @@ function App() {
                   <div className = "info"><ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
                   <h5 className = "info">Current Spectators</h5>
                   <div className = "info"><ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
+                  
+                  <div className="info"><button onClick={onShowRanks}>Hide/Show Rankings</button></div><br />
+                  {leaderboard ? <div>
+                  <table className = "center">
+                  <tr>
+                    <th>Username</th>
+                    <th>Points</th>
+                  </tr>
+
+                    {rankNames.map((item, index) => <tr>
+                      <td>{item===username ? <u><b>{item}</b></u> : item}</td><td>{rankPoints[index]}</td>
+                    </tr>
+                    )}
+                  </table>
+                  <br /> </div>
+                  : <div></div>
+                  }
                 </div>
                   
               :<div className = "holder"> 
