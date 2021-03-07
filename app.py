@@ -35,13 +35,23 @@ def index(filename):
 
 
 def print_players():
-    '''Function used to print current list of players. Used for debugging'''
-    all_players = models.Player.query.all()
+    '''Function used to output the current rankings of players.'''
+    all_players = db.session.query(models.Player.username).order_by(models.Player.points.desc())
     users = []
     for player in all_players:
         users.append(player.username)
-    print("Current Players: ")
-    print(users)
+
+    return users
+    
+def print_points():
+    '''Function used to output a list of rankings'''
+    all_players = db.session.query(models.Player.points).order_by(models.Player.points.desc())
+    points = []
+    for player in all_players:
+        points.append(player.points)
+
+    return points
+
 
 def add_player(name):
     '''Function to add username to DB'''
@@ -60,11 +70,9 @@ def add_player(name):
 
 
 def update_points(name, status):
-    #user = models.Player.query.filter_by(username=name).first()
+    '''Used to update the point totals for a specifc user'''
     user = db.session.query(models.Player).filter_by(username=name).first()
     if status == 'win':
-        #user.points += 1
-        #db.session.commit()
         setattr(user, 'points', user.points+1)
         db.session.commit()
         user = models.Player.query.filter_by(username=name).first()
@@ -72,8 +80,6 @@ def update_points(name, status):
         print(user.points)
     
     if status == 'loss':
-        #user.points -= 1
-        #db.session.commit()
         setattr(user, 'points', user.points-1)
         db.session.commit()
         user = models.Player.query.filter_by(username=name).first()
@@ -112,7 +118,6 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     else:
         socketio.emit('confirm', data, broadcast=True, include_self=True)
         add_player(data['name'])
-        print_players()
 
         if len(players) < 2:
             players.append(data['name'])
@@ -127,7 +132,6 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
             data['ready'] = True
 
         socketio.emit('login', data, broadcast=True, include_self=True)
-
 
 current_winner = ""
 @socketio.on('winner')

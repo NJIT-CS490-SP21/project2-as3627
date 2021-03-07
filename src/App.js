@@ -78,7 +78,6 @@ function App() {
   // Shows the current Status. Displays whose move is next, who the winner is, and if there is a draw.
   let status;
   const winner = calculateWinner(board);
-  let current_champ = "";
   if (winner){
     
     if (winner === 'draw'){
@@ -87,14 +86,12 @@ function App() {
     
     else if (winner === 'X'){
       status = "The winner is " + players[0] + "!";
-      //current_champ = players[0];
       check_champ(players[0]);
       check_loser(players[1]);
     }
     
     else{
       status = "The winner is " + players[1]+ "!";
-      //current_champ = players[1];
       check_champ(players[1]);
       check_loser(players[0]);
     }
@@ -184,6 +181,9 @@ function App() {
       
     });
     
+    socket.on('rankings', (data) => {
+      
+    });
     
   }, []);
   
