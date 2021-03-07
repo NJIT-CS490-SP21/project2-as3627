@@ -19,7 +19,7 @@ function App() {
   const [rankNames, setRankNames] = useState([]);         // Used to store the names of the rankings in order
   const [rankPoints, setRankPoints] = useState([]);       // Used to store the points of the rankings in order
   const [leaderboard, setLeaderboard] = useState(false);  // Used to toggle the leaderboard view.
-  
+
 
   const inputRef = useRef(null);
   
