@@ -144,7 +144,6 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         data['ready'] = False
         data['rank_names'] = print_players()
         data['rank_points'] = print_points()
-        #print("CURRENT RANKINGS: " + str(data['rankings']))
 
         if len(players) == 2:
             data['ready'] = True

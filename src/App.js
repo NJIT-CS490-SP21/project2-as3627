@@ -8,18 +8,18 @@ import {ListUsers} from './ListUsers';
 const socket = io(); // Connects to socket connection
 
 function App() {
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
-  const [turn, setTurn] = useState(0);              // Int used to index player arrays
-  const [players, setPlayers] = useState([]);       // Array for holding usernames of players 
-  const [spectators, setSpectators] = useState([]); // Array for holding usernames of spectators
-  const [loggedIn, setLoggedIn] = useState(false);  // Used to set if the user is logged in or not
-  const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
-  const [username, setUsername] = useState("");     // String used to set the username for the player. 
-  const [vote, setVote] = useState(0);
-  const [rankNames, setRankNames] = useState([]);
-  const [rankPoints, setRankPoints] = useState([]);
-  const [leaderboard, setLeaderboard] = useState(false);
-  //const [viewRank, setViewRank] = useState(false);
+  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]); // Used to initialize the board
+  const [turn, setTurn] = useState(0);                    // Int used to index player arrays
+  const [players, setPlayers] = useState([]);             // Array for holding usernames of players 
+  const [spectators, setSpectators] = useState([]);       // Array for holding usernames of spectators
+  const [loggedIn, setLoggedIn] = useState(false);        // Used to set if the user is logged in or not
+  const [ready, setReady] = useState(false);              // Bool used to determine if 2 people connected to the game or not
+  const [username, setUsername] = useState("");           // String used to set the username for the player. 
+  const [vote, setVote] = useState(0);                    // Used to determine the number of restart votes recieved. 
+  const [rankNames, setRankNames] = useState([]);         // Used to store the names of the rankings in order
+  const [rankPoints, setRankPoints] = useState([]);       // Used to store the points of the rankings in order
+  const [leaderboard, setLeaderboard] = useState(false);  // Used to toggle the leaderboard view.
+
 
   const inputRef = useRef(null);
   
@@ -110,19 +110,19 @@ function App() {
     status = "Next is: " + players[turn];
   }
 
-
+  
+  // Emits the winner
   function check_champ(name){
     
     if (username === name){
-      //console.log("WE WIN");
       socket.emit('winner', { name });
     }
   }
   
+  // Emits the loser
   function check_loser(name){
     
     if (username === name){
-      //console.log("WE LOSE");
       socket.emit('loser', { name });
     }
   }
@@ -133,25 +133,21 @@ function App() {
     
     // When a move has been made.
     socket.on('move', (data) => {
-      //console.log('Move event received!');
 
       setBoard(prevBoard => Object.assign([...prevBoard], {[data.index]: data.play }));
       setTurn(data.nextTurn);
     
     });
     
-    // When a user has logged in.
+    // When a user has logged in. Set player and Spectator arrays. Fetch the current rankings.
     socket.on('login', (data) => {
-      //console.log(data.players);
       
       setPlayers(data.players);
       setSpectators(data.spectators);
-      console.log(data.rank_names);
-      console.log(data.rank_points);
+      
       setRankNames(data.rank_names);
       setRankPoints(data.rank_points);
       
-      //console.log(players[0]);
       
       if (data.ready){
         setReady(true);
@@ -159,10 +155,8 @@ function App() {
 
     });
     
-    
+    // When the scores update, we send the data to the states.
     socket.on('update', (data) => {
-      console.log(data.rank_names);
-      console.log(data.rank_points);
       setRankNames(data.rank_names);
       setRankPoints(data.rank_points);
     });
@@ -194,7 +188,6 @@ function App() {
 
     // When two players vote to restart. Actually restarting the game
     socket.on('confirm_restart', (data) => {
-      //console.log("Confirming Restart");
       
       setBoard(["", "", "", "", "", "", "", "", ""]);
       setTurn(0);
@@ -223,32 +216,36 @@ function App() {
                   <div className = "info"><ul>{players.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
                   <h5 className = "info">Current Spectators</h5>
                   <div className = "info"><ul>{spectators.map((item, index) => <ListUsers key={index} name={item} />)}</ul></div>
-                  
-                  <div className="info"><button onClick={onShowRanks}>Hide/Show Rankings</button></div><br />
-                  {leaderboard ? <div>
-                  <table className = "center">
-                  <tr>
-                    <th>Username</th>
-                    <th>Points</th>
-                  </tr>
 
-                    {rankNames.map((item, index) => <tr>
-                      <td>{item===username ? <u><b>{item}</b></u> : item}</td><td>{rankPoints[index]}</td>
-                    </tr>
-                    )}
-                  </table>
-                  <br /> </div>
-                  : <div></div>
+                  <div className="info"><button onClick={onShowRanks}>Hide/Show Rankings</button></div><br />
+                  {leaderboard ? 
+                    <div>
+                      <table className = "center">
+                        <tr>
+                          <th>Username</th>
+                          <th>Points</th>
+                        </tr>
+                        {rankNames.map((item, index) => 
+                          <tr>
+                            <td>{item===username ? <u><b>{item}</b></u> : item}</td>
+                            <td>{rankPoints[index]}</td>
+                          </tr>
+                        )}
+                      </table>
+                      <br />
+                    </div>
+
+                    : <div></div>
                   }
                 </div>
-                  
+
               :<div className = "holder"> 
                 <h2 className = "info">Waiting for Player 2 to Join</h2>
               </div>
             }
-            
+
           </div>
-          
+
         : <div>
             <div className="holder">
             <h1 className = "info">Enter your Username</h1>
