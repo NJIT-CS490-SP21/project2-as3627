@@ -36,22 +36,37 @@ def index(filename):
 
 def print_players():
     '''Function used to output the current rankings of players.'''
-    all_players = db.session.query(models.Player.username).order_by(models.Player.points.desc())
-    users = []
-    for player in all_players:
-        users.append(player.username)
+    player_names = db.session.query(models.Player.username).order_by(models.Player.points.desc())
+    names = []
+    for i in player_names:
+        names.append(str(i))
+        
+    new_names = format_list(names)
 
-    return users
+    return new_names
     
 def print_points():
     '''Function used to output a list of rankings'''
-    all_players = db.session.query(models.Player.points).order_by(models.Player.points.desc())
-    points = []
-    for player in all_players:
-        points.append(player.points)
+    player_points = db.session.query(models.Player.points).order_by(models.Player.points.desc())
+    pts = []
+    for i in player_points:
+        pts.append(str(i))
+    
+    new_points = format_list(pts)
+    return new_points
 
-    return points
-
+def format_list(old):
+    
+    new_list = []
+    for i in range(len(old)):
+        temp = old[i]
+        temp = temp.replace("(", "")
+        temp = temp.replace(")", "")
+        temp = temp.replace("'", "")
+        temp = temp.replace(",", "")
+        new_list.append(temp)
+    
+    return new_list
 
 def add_player(name):
     '''Function to add username to DB'''
@@ -127,6 +142,9 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         data['players'] = players
         data['spectators'] = spectators
         data['ready'] = False
+        data['rank_names'] = print_players()
+        data['rank_points'] = print_points()
+        #print("CURRENT RANKINGS: " + str(data['rankings']))
 
         if len(players) == 2:
             data['ready'] = True
@@ -143,6 +161,9 @@ def on_winner(data): # This function will get a winner and update the DB accordi
         current_winner = data["name"]
         update_points(current_winner, 'win')
         print("CURRENT WINNER IS: " + current_winner)
+        data['rank_names'] = print_players()
+        data['rank_points'] = print_points()
+        socketio.emit('update', data, broadcast=True, include_self=True)
 
 
 current_loser = ""
@@ -155,6 +176,9 @@ def on_loser(data): # This function will get a winner and update the DB accordin
         current_loser = data["name"]
         update_points(current_loser, 'loss')
         print("CURRENT LOSER IS: " + current_loser)
+        data['rank_names'] = print_players()
+        data['rank_points'] = print_points()
+        socketio.emit('update', data, broadcast=True, include_self=True)
 
 
 restart = []

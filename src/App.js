@@ -16,7 +16,10 @@ function App() {
   const [ready, setReady] = useState(false);        // Bool used to determine if 2 people connected to the game or not
   const [username, setUsername] = useState("");     // String used to set the username for the player. 
   const [vote, setVote] = useState(0);
-  
+  const [rankNames, setRankNames] = useState([]);
+  const [rankPoints, setRankPoints] = useState([]);
+  //const [viewRank, setViewRank] = useState(false);
+
   const inputRef = useRef(null);
   
   // For Login and Username chacking, using state variables didn't work inside of useEffect.
@@ -26,6 +29,7 @@ function App() {
   
   const userRef = useRef(null);
   userRef.current = username;
+  
   
   // Handles adding a move to the board
   function addMove(index){
@@ -106,7 +110,7 @@ function App() {
   function check_champ(name){
     
     if (username === name){
-      console.log("WE WIN");
+      //console.log("WE WIN");
       socket.emit('winner', { name });
     }
   }
@@ -114,7 +118,7 @@ function App() {
   function check_loser(name){
     
     if (username === name){
-      console.log("WE LOSE");
+      //console.log("WE LOSE");
       socket.emit('loser', { name });
     }
   }
@@ -125,7 +129,7 @@ function App() {
     
     // When a move has been made.
     socket.on('move', (data) => {
-      console.log('Move event received!');
+      //console.log('Move event received!');
 
       setBoard(prevBoard => Object.assign([...prevBoard], {[data.index]: data.play }));
       setTurn(data.nextTurn);
@@ -134,16 +138,29 @@ function App() {
     
     // When a user has logged in.
     socket.on('login', (data) => {
-      console.log(data.players);
+      //console.log(data.players);
       
       setPlayers(data.players);
       setSpectators(data.spectators);
-      console.log(players[0]);
+      console.log(data.rank_names);
+      console.log(data.rank_points);
+      setRankNames(data.rank_names);
+      setRankPoints(data.rank_points);
+      
+      //console.log(players[0]);
       
       if (data.ready){
         setReady(true);
       }
 
+    });
+    
+    
+    socket.on('update', (data) => {
+      console.log(data.rank_names);
+      console.log(data.rank_points);
+      setRankNames(data.rank_names);
+      setRankPoints(data.rank_points);
     });
     
     // When a person tries to login with a duplicate username.
@@ -166,14 +183,14 @@ function App() {
     
     // When 1 player votes to restart.
     socket.on('restart', (data) => {
-      console.log("Received 1 Vote");
+      //console.log("Received 1 Vote");
       setVote(1);
       
     });
 
     // When two players vote to restart. Actually restarting the game
     socket.on('confirm_restart', (data) => {
-      console.log("Confirming Restart");
+      //console.log("Confirming Restart");
       
       setBoard(["", "", "", "", "", "", "", "", ""]);
       setTurn(0);
@@ -181,9 +198,6 @@ function App() {
       
     });
     
-    socket.on('rankings', (data) => {
-      
-    });
     
   }, []);
   
