@@ -1,4 +1,4 @@
-# Project 2: Milestone 1
+# Project 2: Milestone 2
 
 ## Requirements
 Install these in the environment if you don't have them already.
@@ -8,6 +8,8 @@ Install these in the environment if you don't have them already.
 4. `pip install flask-socketio`
 5. `pip install flask-cors`
 6. `npm install -g heroku` (Not needed if you only want to run locally)
+7. `pip install psycopg2-binary`
+8. `pip install Flask-SQLAlchemy==2.1`
 
 ## Setup
 #### Clone the Repositoy
@@ -22,6 +24,36 @@ Install these in the environment if you don't have them already.
 1. Run `echo "DANGEROUSLY_DISABLE_HOST_CHECK=true" > .env.development.local` in the project directory
 2. `cd` into `react-starter` directory, and run `npm install socket.io-client --save`
 
+#### Database setup
+These first steps are the general setup for databases.
+1. Install PostGreSQL: `sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs` Enter yes to all prompts.
+2. Initialize PSQL database: `sudo service postgresql initdb`
+3. Start PSQL: `sudo service postgresql start`
+4. Make a new superuser: `sudo -u postgres createuser --superuser $USER` If you get an error saying "could not change directory", that's okay! It worked!
+5. Make a new database: `sudo -u postgres createdb $USER` If you get an error saying "could not change directory", that's okay! It worked!
+6. Type `psql`
+- Type this with your username and password (DONT JUST COPY PASTE): `create user some_username_here superuser password 'some_unique_new_password_here';` 
+e.g. `create user namanaman superuser password 'mysecretpassword123';`
+- do `\q` to quit.
+- Save your username and password in a `sql.env` file with the format `SQL_USER=` and `SQL_PASSWORD=` (Not in the directory, in your environment)
+
+
+This next part is dealing with heroku databases.
+1. In your terminal, go to the directory with `app.py.`
+- Login and fill creds: `heroku login -i`
+- Create a new Heroku app (if you haven't already): `heroku create --buildpack heroku/python`
+- Create a new remote DB on your Heroku app: `heroku addons:create heroku-postgresql:hobby-dev` (If that doesn't work, add a 
+`-a {your-app-name}` to the end of the command, no braces)
+- See the config vars set by Heroku for you: `heroku config`. Copy paste the value for DATABASE_URL
+- Create a `.env` file and add set our var DATABASE\_URL. Run `touch .env && echo "DATABASE_URL='copy-paste-database-url-here'" > .env`
+2. In the terminal, run `python` to open up an interactive session. Let's initialize a new database in it using SQLAlchemy functions. Type in these Python lines one by one:
+```
+>> from app import db
+>> import models
+>> db.create_all()
+```
+- Note that if you don't do this, it can cause an issue with connecting to the DB.
+
 #### Sign up for a Heroku Account (Not needed if you want to run locally only)
 1. You can sign up for a free Heroku account on their website here: [https://signup.heroku.com/login](https://signup.heroku.com/login).
 2. Heroku is used to host the web app.
@@ -32,9 +64,8 @@ Install these in the environment if you don't have them already.
 3. Preview web page in browser `'/'`
 
 ## Deploy to Heroku
-##### Not needed if you want to run locally.
-1. Create a Heroku app: `heroku create --buildpack heroku/python`
-2. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs`
+1. Create a Heroku app (if you haven't already): `heroku create --buildpack heroku/python`
+2. Add the nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs`
 3. Push to Heroku: `git push heroku main`
 
 
@@ -51,6 +82,12 @@ take over as a player.
 respond with a move of their own. If the player does not respond within the time limit, they automatically forfeit. This could be done
 on the server side, with the back end checking the passage of time between moves, and emitting a forefit response to the client 
 should time be up.
+3. One other feature I would like to implement is a password field. This adds a level of security to the user account. We can have a
+password field in the Database and upon login, if the user exists, it would check the passwords and then confirm logging in. Currently, a 
+user can log in as any created username and mess with their rankings. With the addition of the password field, it would no longer be possible. 
+4. Antoher feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
+of W's, L's, and even D's (Wins, Losses, Draws). For example, WLLDW. Upon the game ending, the oldest part of the string would get dropped and the latest match history 
+would be added. 
 
 ## Technical Issues Faced
 1. An issue I faced was that when a player logged in, their username wouldn't be put into the local players array until another user joined in after them.
@@ -66,6 +103,14 @@ it emits back a `confirm`. Inside the `useEffect` function, I was using the stat
 After attempting to rewrite the function again, I found that the `username` state was undefined. I asked my friend Mervyn for help and he told me 
 to use `useRef`s as references for the state variables. He encountered a similar issue and it was apparently due to how `useEffect` deals with state variables.
 With that change in my code, I was able to get it working.
+3. When I was trying to update the database for points, it wasn't commiting the changes. Initially my code was using `models.Player.query...` as the query string. 
+I tried looking at stackOverflow and the documentation for SQLAlchemy, but that didn't help either. I tried askign one of my friends Philip and he ended up finding 
+the issue with my code. Since I was using `models.Player.query...` as my query string, I was actually making a copy of the current db session. None of my changes were 
+actually being done, they were only being printed out locally. I had to do `db.session.query...` in order to actually work with the database. 
+4. When I was trying to send data from the backend to the front, I was initially using a dictionary for the usernames and their points. in the backend, all of the entries
+were ordered by points, but when I sent it to the front end, they were in alphabetical order by usernames. I initially assumed there was a problem with sending the data, but 
+after I rewrote the functions, it was still arranging them wrong in the front end. I went to Stack Overflow, and I foudn that the issue was that in 
+JS, apparently dictionaries were objects and that the keys can get rearranged when passing them from back to front. Due to this, I decided to use two lists instead of a dictioanry.
 
 
 ## Extra Features I Implmented:
