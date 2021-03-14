@@ -22,16 +22,16 @@ function App() {
 
 
   const inputRef = useRef(null);
-  
+
   // For Login and Username chacking, using state variables didn't work inside of useEffect.
   // Mervyn reccomended that I utilize `useRef` for this, and it works.
   const loginRef = useRef(null);
   loginRef.current = loggedIn;
-  
+
   const userRef = useRef(null);
   userRef.current = username;
-  
-  
+
+
   // Handles adding a move to the board
   function addMove(index){
 
@@ -60,8 +60,8 @@ function App() {
     }
    
   }
-  
-  
+
+
   // Handles the login action
   function onLoginButton(){
     
