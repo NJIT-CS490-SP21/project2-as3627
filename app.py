@@ -6,8 +6,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
 
-
-load_dotenv(find_dotenv()) # This is to load your env variables from .env
+load_dotenv(find_dotenv())  # This is to load your env variables from .env
 
 APP = Flask(__name__, static_folder='./build/static')
 # Point SQLAlchemy to your Heroku database
@@ -19,16 +18,15 @@ DB = SQLAlchemy(APP)
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
 import models
+
 DB.create_all()
 
-
 CORS = CORS(APP, resources={r"/*": {"origins": "*"}})
-SOCKETIO = SocketIO(
-    APP,
-    cors_allowed_origins="*",
-    json=json,
-    manage_session=False
-)
+SOCKETIO = SocketIO(APP,
+                    cors_allowed_origins="*",
+                    json=json,
+                    manage_session=False)
+
 
 @APP.route('/', defaults={"filename": "index.html"})
 @APP.route('/<path:filename>')
@@ -39,7 +37,8 @@ def index(filename):
 
 def print_players():
     '''Function used to output the current rankings of players.'''
-    player_names = DB.session.query(models.Player.username).order_by(models.Player.points.desc())
+    player_names = DB.session.query(models.Player.username).order_by(
+        models.Player.points.desc())
     names = []
     for i in player_names:
         names.append(str(i))
@@ -51,7 +50,8 @@ def print_players():
 
 def print_points():
     '''Function used to output a list of rankings'''
-    player_points = DB.session.query(models.Player.points).order_by(models.Player.points.desc())
+    player_points = DB.session.query(models.Player.points).order_by(
+        models.Player.points.desc())
     pts = []
     for i in player_points:
         pts.append(str(i))
@@ -73,6 +73,7 @@ def format_list(old):
 
     return new_list
 
+
 def add_player(name):
     '''Function to add username to DB'''
     all_players = models.Player.query.all()
@@ -93,38 +94,34 @@ def update_points(name, status):
     '''Used to update the point totals for a specifc user'''
     user = DB.session.query(models.Player).filter_by(username=name).first()
     if status == 'win':
-        setattr(user, 'points', user.points+1)
+        setattr(user, 'points', user.points + 1)
         DB.session.commit()
         user = models.Player.query.filter_by(username=name).first()
         print("Winner's Points")
         print(user.points)
 
     if status == 'loss':
-        setattr(user, 'points', user.points-1)
+        setattr(user, 'points', user.points - 1)
         DB.session.commit()
         user = models.Player.query.filter_by(username=name).first()
         print("Loser's Points")
         print(user.points)
 
 
-# When a client connects from this Socket connection, this function is run
 @SOCKETIO.on('connect')
 def on_connect():
     '''When a client connects from this Socket connection, this function is run'''
     print('User connected!')
 
 
-# When a client disconnects from this Socket connection, this function is run
 @SOCKETIO.on('disconnect')
 def on_disconnect():
     '''When a client disconnects from this Socket connection, this function is run'''
     print('User disconnected!')
 
 
-# When a client emits the event 'move' to the server, this function is run
 @SOCKETIO.on('move')
-
-def on_move(data): # data is whatever arg you pass in your emit call on client
+def on_move(data):
     '''When a client emits the event 'move' to the server, this function is run'''
     print(str(data))
     SOCKETIO.emit('move', data, broadcast=True, include_self=False)
@@ -134,8 +131,9 @@ def on_move(data): # data is whatever arg you pass in your emit call on client
 PLAYERS = []
 SPECTATORS = []
 
+
 @SOCKETIO.on('login')
-def on_login(data): # data is whatever arg you pass in your emit call on client
+def on_login(data):
     '''When a client logs in'''
     if data['name'] in PLAYERS:
         SOCKETIO.emit('deny', data, broadcast=True, include_self=True)
@@ -162,11 +160,13 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         SOCKETIO.emit('login', data, broadcast=True, include_self=True)
 
 
-# When the player who won sends a message to the client
+# Variable to store the current winner
 CURRENT_WINNER = ""
+
+
 @SOCKETIO.on('winner')
-def on_winner(data): # This function will get a winner and update the DB accordingly
-    ''' When the player who won sends a message to the client '''
+def on_winner(data):
+    ''' This function will get a winner and update the DB accordingly '''
     global CURRENT_WINNER
 
     print(str(data))
@@ -179,10 +179,13 @@ def on_winner(data): # This function will get a winner and update the DB accordi
         SOCKETIO.emit('update', data, broadcast=True, include_self=True)
 
 
-# When the player who lost sends a message to the client
+# Variable to store current loser
 CURRENT_LOSER = ""
+
+
 @SOCKETIO.on('loser')
-def on_loser(data): # This function will get a winner and update the DB accordingly
+def on_loser(
+        data):  # This function will get a winner and update the DB accordingly
     ''' When the player who lost sends a message to the client '''
     global CURRENT_LOSER
 
@@ -196,10 +199,13 @@ def on_loser(data): # This function will get a winner and update the DB accordin
         SOCKETIO.emit('update', data, broadcast=True, include_self=True)
 
 
-# Use an array to hold whichever player has hit restart.
+# Use an array to hold the players who hit restart.
 RESTART = []
+
+
 @SOCKETIO.on('restart')
-def on_restart(data): # data is whatever arg you pass in your emit call on client
+def on_restart(
+        data):  # data is whatever arg you pass in your emit call on client
     ''' When the reset event is recieved '''
     global CURRENT_WINNER
     global CURRENT_LOSER
@@ -212,7 +218,10 @@ def on_restart(data): # data is whatever arg you pass in your emit call on clien
     print(RESTART)
 
     if len(RESTART) == 2:
-        SOCKETIO.emit('confirm_restart', data, broadcast=True, include_self=True)
+        SOCKETIO.emit('confirm_restart',
+                      data,
+                      broadcast=True,
+                      include_self=True)
         CURRENT_WINNER = ""
         CURRENT_LOSER = ""
         print("AFTER RESTART, CURRENT WINNER IS: " + CURRENT_WINNER)
@@ -225,7 +234,7 @@ def on_restart(data): # data is whatever arg you pass in your emit call on clien
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
-# Note that we don't call app.run anymore. We call socketio.run with app arg
+    # Note that we don't call app.run anymore. We call socketio.run with app arg
     SOCKETIO.run(
         APP,
         host=os.getenv('IP', '0.0.0.0'),
