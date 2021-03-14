@@ -5,7 +5,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
-import models
+
 
 load_dotenv(find_dotenv()) # This is to load your env variables from .env
 
@@ -18,7 +18,7 @@ APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 DB = SQLAlchemy(APP)
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
-
+import models
 DB.create_all()
 
 
