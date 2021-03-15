@@ -254,7 +254,7 @@ function App() {
           <div className="holder">
             <h1 className="info">Enter your Username</h1>
             <div className="info">
-              <input ref={inputRef} type="text" />
+              <input ref={inputRef} type="text" aria-label="username-input" />
               <button onClick={onLoginButton} type="submit">
                 Login
               </button>

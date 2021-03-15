@@ -12,7 +12,12 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["react"],
-  ignorePatterns: ["setupTests.js", "reportWebVitals.js", "index.js"],
+  ignorePatterns: [
+    "setupTests.js",
+    "reportWebVitals.js",
+    "index.js",
+    "App.test.js",
+  ],
   rules: {},
   overrides: [
     {

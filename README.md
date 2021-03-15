@@ -1,4 +1,7 @@
-# Project 2: Milestone 2
+# Project 2: 
+
+## Link to final product:
+https://murmuring-ocean-10847.herokuapp.com/
 
 ## Requirements
 Install these in the environment if you don't have them already.
@@ -85,7 +88,7 @@ should time be up.
 3. One other feature I would like to implement is a password field. This adds a level of security to the user account. We can have a
 password field in the Database and upon login, if the user exists, it would check the passwords and then confirm logging in. Currently, a 
 user can log in as any created username and mess with their rankings. With the addition of the password field, it would no longer be possible. 
-4. Antoher feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
+4. Another feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
 of W's, L's, and even D's (Wins, Losses, Draws). For example, WLLDW. Upon the game ending, the oldest part of the string would get dropped and the latest match history 
 would be added. 
 
