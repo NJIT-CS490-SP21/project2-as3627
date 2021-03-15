@@ -1,19 +1,74 @@
-import react from 'react';
-import './Board.css'
-import {Box} from './Box.js';
+import React from 'react';
+import PropTypes from 'prop-types';
+import './Board.css';
+import Box from './Box';
 
-export function Board(props){
-    
-    return<div className="board">
-        <Box move={props.board[0]} click={() => {props.click(0)}} />
-        <Box move={props.board[1]} click={() => {props.click(1)}} />
-        <Box move={props.board[2]} click={() => {props.click(2)}}  />
-        <Box move={props.board[3]} click={() => {props.click(3)}} />
-        <Box move={props.board[4]} click={() => {props.click(4)}} />
-        <Box move={props.board[5]} click={() => {props.click(5)}} />
-        <Box move={props.board[6]} click={() => {props.click(6)}} />
-        <Box move={props.board[7]} click={() => {props.click(7)}} />
-        <Box move={props.board[8]} click={() => {props.click(8)}} />
-    </div>;
-   
+function Board(props) {
+  const { board } = props;
+  const { click } = props;
+  return (
+    <div className="board">
+      <Box
+        move={board[0]}
+        click={() => {
+          click(0);
+        }}
+      />
+      <Box
+        move={board[1]}
+        click={() => {
+          click(1);
+        }}
+      />
+      <Box
+        move={board[2]}
+        click={() => {
+          click(2);
+        }}
+      />
+      <Box
+        move={board[3]}
+        click={() => {
+          click(3);
+        }}
+      />
+      <Box
+        move={board[4]}
+        click={() => {
+          click(4);
+        }}
+      />
+      <Box
+        move={board[5]}
+        click={() => {
+          click(5);
+        }}
+      />
+      <Box
+        move={board[6]}
+        click={() => {
+          click(6);
+        }}
+      />
+      <Box
+        move={board[7]}
+        click={() => {
+          click(7);
+        }}
+      />
+      <Box
+        move={board[8]}
+        click={() => {
+          click(8);
+        }}
+      />
+    </div>
+  );
 }
+
+Board.propTypes = {
+  board: PropTypes.func.isRequired,
+  click: PropTypes.func.isRequired,
+};
+
+export { Board as default };

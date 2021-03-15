@@ -1,10 +1,21 @@
-import react from 'react';
-import './Board.css'
+import React from 'react';
+import PropTypes from 'prop-types';
+import './Board.css';
 
-export function Box(props){
-    
-    return<div className="box" onClick = {props.click}>
-    {props.move} 
-    </div>;
-   
+function Box(props) {
+  const { move } = props;
+  const { click } = props;
+
+  return (
+    <div className="box" onClick={click} aria-hidden="true">
+      {move}
+    </div>
+  );
 }
+
+Box.propTypes = {
+  move: PropTypes.string.isRequired,
+  click: PropTypes.func.isRequired,
+};
+
+export { Box as default };

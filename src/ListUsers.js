@@ -1,7 +1,14 @@
-import react from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export function ListUsers(props){
-    return<li>
-        {props.name}
-        </li>;
+function ListUsers(props) {
+  const { name } = props;
+
+  return <li>{name}</li>;
 }
+
+ListUsers.propTypes = {
+  name: PropTypes.string.isRequired,
+};
+
+export { ListUsers as default };

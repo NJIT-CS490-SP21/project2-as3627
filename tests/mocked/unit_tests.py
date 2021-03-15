@@ -16,6 +16,7 @@ KEY_EXPECTED = "expected"
 INITIAL_USERNAME = 'Deep'
 
 
+# Mocks the add_player function which adds a player to the db
 class AddUserTestCase(unittest.TestCase):
     def setUp(self):
         self.success_test_params = [

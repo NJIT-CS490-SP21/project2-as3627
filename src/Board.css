@@ -1,29 +1,35 @@
 .board {
-	width: 300px; /* Total horizontal dimensions */
-	height: 300px; /* Total vertical dimensions */
-	display: grid; /* Enables CSS Grid */ 
-	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-    grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
-    margin: auto;
+  width: 300px; /* Total horizontal dimensions */
+  height: 300px; /* Total vertical dimensions */
+  display: grid; /* Enables CSS Grid */
+  grid-template-columns: repeat(
+    3,
+    1fr
+  ); /* Total horizontal space broken into 3 columns */
+  grid-template-rows: repeat(
+    3,
+    1fr
+  ); /* Total vertical space broken into 3 rows */
+  margin: auto;
 }
 
-.box{
-    border: 1px solid black; /* Shows the lines in the CSS grid */
-    font-size: 50px;
-	display: flex;
- 	justify-content: center;
-  	align-items: center;
+.box {
+  border: 1px solid black; /* Shows the lines in the CSS grid */
+  font-size: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.info{
-	display: flex;
- 	justify-content: center;
-  	align-items: center;
+.info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.holder{
-	margin:auto;
-	padding: 15px;
+.holder {
+  margin: auto;
+  padding: 15px;
 }
 .center {
   margin-left: auto;
