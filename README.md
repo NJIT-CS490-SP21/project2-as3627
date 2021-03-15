@@ -55,7 +55,7 @@ This next part is dealing with heroku databases.
 >> import models
 >> db.create_all()
 ```
-- Note that if you don't do this, it can cause an issue with connecting to the DB.
+- Note that if you don't do this, it can cause an issue with connecting to the DB, and can freeze up the game.
 
 #### Sign up for a Heroku Account (Not needed if you want to run locally only)
 1. You can sign up for a free Heroku account on their website here: [https://signup.heroku.com/login](https://signup.heroku.com/login).
@@ -80,15 +80,24 @@ assumed no one leaves the game and that everyone connects before the first move 
 a ploblem that I have to acknowledge. One solution could be the use of pinging each client. Every minute or so,
 the server could send out a ping to check if the user is still connected, and if they leave, the player/spectator array 
 could be updated. If a player client doesn't respond to the ping, we could restart the game and have the first spectator 
-take over as a player. 
-2. One future feature I'd like to implement is a timer condition. After making a move, each player should have a minute or so to 
+take over as a player.
+2. Another known problem is that in order to create the db in the first place, you need to run:
+```
+$ python
+>> from app import db
+>> import models
+>> db.create_all()
+```
+inside the command line first. The DB doesn't automatically create itself otherwise for some reason. I don't have any potential fix for this, so I reccomend 
+doing this when creating a new DB.
+3. One future feature I'd like to implement is a timer condition. After making a move, each player should have a minute or so to 
 respond with a move of their own. If the player does not respond within the time limit, they automatically forfeit. This could be done
 on the server side, with the back end checking the passage of time between moves, and emitting a forefit response to the client 
 should time be up.
-3. One other feature I would like to implement is a password field. This adds a level of security to the user account. We can have a
+4. One other feature I would like to implement is a password field. This adds a level of security to the user account. We can have a
 password field in the Database and upon login, if the user exists, it would check the passwords and then confirm logging in. Currently, a 
 user can log in as any created username and mess with their rankings. With the addition of the password field, it would no longer be possible. 
-4. Another feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
+5. Another feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
 of W's, L's, and even D's (Wins, Losses, Draws). For example, WLLDW. Upon the game ending, the oldest part of the string would get dropped and the latest match history 
 would be added. 
 
