@@ -143,9 +143,9 @@ def on_login(data):
         var = add_player(data['name'])
 
         if var:
-            print("New user added")
+            print("New user has been added")
         else:
-            print("Returning user not added")
+            print("Returning user has not been added")
 
         if len(PLAYERS) < 2:
             PLAYERS.append(data['name'])
