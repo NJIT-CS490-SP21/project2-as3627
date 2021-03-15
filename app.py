@@ -84,10 +84,9 @@ def add_player(name):
         new_user = models.Player(username=name, points=100)
         DB.session.add(new_user)
         DB.session.commit()
-        print("Added new user: ")
-        print(name)
-    else:
-        print("Duplicate user will not be added")
+        return True
+
+    return False
 
 
 def update_points(name, status):
@@ -141,7 +140,12 @@ def on_login(data):
         SOCKETIO.emit('deny', data, broadcast=True, include_self=True)
     else:
         SOCKETIO.emit('confirm', data, broadcast=True, include_self=True)
-        add_player(data['name'])
+        var = add_player(data['name'])
+
+        if var:
+            print("New user added")
+        else:
+            print("Returning user not Added")
 
         if len(PLAYERS) < 2:
             PLAYERS.append(data['name'])

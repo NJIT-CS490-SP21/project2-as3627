@@ -14,51 +14,46 @@ class FormatListTestCase(unittest.TestCase):
                 KEY_INPUT: ["('PlayerA',)"],
                 KEY_EXPECTED: ["PlayerA"],
             },
-            
             {
                 KEY_INPUT: ["('1',)"],
                 KEY_EXPECTED: ["1"],
             },
-            
             {
                 KEY_INPUT: ["('PlayerA',)", "('1',)"],
                 KEY_EXPECTED: ["PlayerA", "1"],
             },
         ]
-        
+
         self.failure_test_params = [
             {
                 KEY_INPUT: ["('2',)"],
                 KEY_EXPECTED: ["('2',)", ""],
             },
-            
-             {
+            {
                 KEY_INPUT: ["'(PlayerB',)"],
-                KEY_EXPECTED: ["'PlayerA'","(,)"],
+                KEY_EXPECTED: ["'PlayerA'", "(,)"],
             },
-            
             {
                 KEY_INPUT: ["('PlayerB',)", "('2',)"],
                 KEY_EXPECTED: ["PlayerB 2"],
             },
         ]
 
-
     def test_format_list_success(self):
         for test in self.success_test_params:
             actual_result = format_list(test[KEY_INPUT])
-            
+
             expected_result = test[KEY_EXPECTED]
-            
+
             self.assertEqual(len(actual_result), len(expected_result))
             self.assertEqual(actual_result, expected_result)
-            
+
     def test_format_list_failure(self):
         for test in self.failure_test_params:
             actual_result = format_list(test[KEY_INPUT])
-            
+
             expected_result = test[KEY_EXPECTED]
-            
+
             self.assertNotEqual(len(actual_result), len(expected_result))
             self.assertNotEqual(actual_result, expected_result)
 
@@ -77,35 +72,33 @@ def format_list(old):
     return new_list
 
 
-
 class LoginTestCase(unittest.TestCase):
     def setUp(self):
         self.success_test_params = [
             {
                 KEY_INPUT: ["Player_A"],
-                KEY_EXPECTED: [["Player_A"],[]],
+                KEY_EXPECTED: [["Player_A"], []],
             },
-
             {
                 KEY_INPUT: ["Player_A", "Player_B"],
                 KEY_EXPECTED: [["Player_A", "Player_B"], []],
             },
-
             {
-                KEY_INPUT: ["Player_A", "Player_B", "Spectator_1", "Spectator_2"],
-                KEY_EXPECTED: [["Player_A", "Player_B"], ["Spectator_1", "Spectator_2"]],
+                KEY_INPUT:
+                ["Player_A", "Player_B", "Spectator_1", "Spectator_2"],
+                KEY_EXPECTED: [["Player_A", "Player_B"],
+                               ["Spectator_1", "Spectator_2"]],
             },
-
             {
                 KEY_INPUT: ["Player_A", "Player_A", "Player_A"],
-                KEY_EXPECTED: [["Player_A"],[]],
+                KEY_EXPECTED: [["Player_A"], []],
             },
         ]
-        
+
         self.failure_test_params = [
             {
                 KEY_INPUT: ["Player_A", "Player_B"],
-                KEY_EXPECTED: [["Player_A"],["Player_B"]],
+                KEY_EXPECTED: [["Player_A"], ["Player_B"]],
             },
             {
                 KEY_INPUT: ["Player_A", "Player_B", "Player_C"],
@@ -113,22 +106,22 @@ class LoginTestCase(unittest.TestCase):
             },
             {
                 KEY_INPUT: ["Spectator_1", "Spectator_2", "Spectator_3"],
-                KEY_EXPECTED: [[], ["Spectator_1", "Spectator_2", "Spectator_3"]],
+                KEY_EXPECTED: [[],
+                               ["Spectator_1", "Spectator_2", "Spectator_3"]],
             },
             {
                 KEY_INPUT: ["Spectator_1", "Spectator_1", "Spectator_1"],
-                KEY_EXPECTED: [["Spectator_1", "Spectator_1"], ["Spectator_1"]],
+                KEY_EXPECTED: [["Spectator_1", "Spectator_1"],
+                               ["Spectator_1"]],
             },
-            
         ]
-
 
     def test_login_success(self):
         global PLAYERS, SPECTATORS
         for test in self.success_test_params:
             for i in test[KEY_INPUT]:
                 on_login(i)
-            
+
             expected_result = test[KEY_EXPECTED]
             self.assertEqual(len(PLAYERS), len(expected_result[0]))
             self.assertEqual(PLAYERS, expected_result[0])
@@ -136,13 +129,13 @@ class LoginTestCase(unittest.TestCase):
             self.assertEqual(SPECTATORS, expected_result[1])
             PLAYERS = []
             SPECTATORS = []
-            
+
     def test_login_failure(self):
         global PLAYERS, SPECTATORS
         for test in self.failure_test_params:
             for i in test[KEY_INPUT]:
                 on_login(i)
-            
+
             expected_result = test[KEY_EXPECTED]
             self.assertNotEqual(len(PLAYERS), len(expected_result[0]))
             self.assertNotEqual(PLAYERS, expected_result[0])
@@ -154,6 +147,7 @@ class LoginTestCase(unittest.TestCase):
 
 PLAYERS = []
 SPECTATORS = []
+
 
 # I rewrote the login function so it doesn't involve DB or SocketIO
 def on_login(name):
