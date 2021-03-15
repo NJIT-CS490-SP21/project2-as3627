@@ -81,6 +81,7 @@ a ploblem that I have to acknowledge. One solution could be the use of pinging e
 the server could send out a ping to check if the user is still connected, and if they leave, the player/spectator array 
 could be updated. If a player client doesn't respond to the ping, we could restart the game and have the first spectator 
 take over as a player.
+
 2. Another known problem is that in order to create the db in the first place, you need to run:
 ```
 $ python
@@ -88,15 +89,18 @@ $ python
 >> import models
 >> db.create_all()
 ```
-inside the command line first. The DB doesn't automatically create itself otherwise for some reason. I don't have any potential fix for this, so I reccomend 
+inside the command line first. The DB doesn't automatically create itself otherwise for some reason. I don't have any potential fix for this, so I recommend 
 doing this when creating a new DB.
+
 3. One future feature I'd like to implement is a timer condition. After making a move, each player should have a minute or so to 
 respond with a move of their own. If the player does not respond within the time limit, they automatically forfeit. This could be done
 on the server side, with the back end checking the passage of time between moves, and emitting a forefit response to the client 
 should time be up.
+
 4. One other feature I would like to implement is a password field. This adds a level of security to the user account. We can have a
 password field in the Database and upon login, if the user exists, it would check the passwords and then confirm logging in. Currently, a 
 user can log in as any created username and mess with their rankings. With the addition of the password field, it would no longer be possible. 
+
 5. Another feature I would like to implement is a match history field in the database. It would track the users past 5 games with a string
 of W's, L's, and even D's (Wins, Losses, Draws). For example, WLLDW. Upon the game ending, the oldest part of the string would get dropped and the latest match history 
 would be added. 
@@ -107,6 +111,7 @@ I believe this issue was caused becuase when the user logs in, the local players
 I needed to be ablt to emit the message to all clients including the one who logged in. I was able to fix this issue by looking over Stack Overflow. I found 
 someone who had a similar issue and discovered the problem was in my python code, I had `include_self = False` when I was emitting. By changing the `False` to 
 a `True`, I was able to update the players' array right away, without the need for another user to login.
+
 2. In my previous version of the code, if someone logged in with the same username as a player, they were able to make a move on the board
 when it came to be that player's turn. After this occured, I decided to only have unique usernames logged in at once. In order to do this, I 
 decided to run a check during login. On the client side, it emits `login` when entering a username, and sends it
@@ -115,10 +120,12 @@ it emits back a `confirm`. Inside the `useEffect` function, I was using the stat
 After attempting to rewrite the function again, I found that the `username` state was undefined. I asked my friend Mervyn for help and he told me 
 to use `useRef`s as references for the state variables. He encountered a similar issue and it was apparently due to how `useEffect` deals with state variables.
 With that change in my code, I was able to get it working.
+
 3. When I was trying to update the database for points, it wasn't commiting the changes. Initially my code was using `models.Player.query...` as the query string. 
 I tried looking at stackOverflow and the documentation for SQLAlchemy, but that didn't help either. I tried askign one of my friends Philip and he ended up finding 
 the issue with my code. Since I was using `models.Player.query...` as my query string, I was actually making a copy of the current db session. None of my changes were 
 actually being done, they were only being printed out locally. I had to do `db.session.query...` in order to actually work with the database. 
+
 4. When I was trying to send data from the backend to the front, I was initially using a dictionary for the usernames and their points. in the backend, all of the entries
 were ordered by points, but when I sent it to the front end, they were in alphabetical order by usernames. I initially assumed there was a problem with sending the data, but 
 after I rewrote the functions, it was still arranging them wrong in the front end. I went to Stack Overflow, and I foudn that the issue was that in 
